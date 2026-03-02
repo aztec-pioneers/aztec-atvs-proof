@@ -5,7 +5,7 @@ import { AztecAddress } from '@aztec/aztec.js/addresses';
 import { createAztecNodeClient, type AztecNode } from "@aztec/aztec.js/node";
 import { TokenContract } from '../src/artifacts';
 import { precision } from "../src/utils";
-import { AuditableTestWallet } from "@aztec/note-collector";
+import { AuditableEmbeddedWallet } from "@aztec/wallets/auditable";
 import { sleep } from "bun";
 import { retrieveEncryptedNotes } from "../src/auditor";
 import { buildIMTFromCiphertexts } from "../src/imt";
@@ -21,7 +21,7 @@ const { AZTEC_NODE_URL = "http://localhost:8080" } = process.env;
 describe("Private Transfer Demo Test", () => {
 
     let node: AztecNode;
-    let wallet: AuditableTestWallet;
+    let wallet: AuditableEmbeddedWallet;
     let addresses: AztecAddress[];
     let token: TokenContract;
     let bb: Barretenberg;
@@ -36,7 +36,7 @@ describe("Private Transfer Demo Test", () => {
         console.log(`Connected to Aztec node at "${AZTEC_NODE_URL}"`);
 
         addresses = [];
-        wallet = await AuditableTestWallet.create(node, { proverEnabled: false })
+        wallet = await AuditableEmbeddedWallet.create(node, { ephemeral: true, pxeConfig: { proverEnabled: false } })
 
         const accounts = await getInitialTestAccountsData();
         for (const account of accounts) {
